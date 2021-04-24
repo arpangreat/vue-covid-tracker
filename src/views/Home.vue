@@ -3,6 +3,19 @@
 		<DataTitle :text="title" :dataDate="dataDate" />
 
 		<DataBoxes :stats="stats" />
+
+		<CountrySelect
+			@get-country="getCountryData"
+			:countries="countries"
+		/>
+
+		<button
+			@click="clearCountryData"
+			v-if="stats.Country"
+			class="bg-green-700 text-white rounded p-3 mt-10 focus:outline-none hover:bg-green-600"
+		>
+			Clear Country
+		</button>
 	</main>
 
 	<main
@@ -20,9 +33,10 @@
 import { Options, Vue } from "vue-class-component";
 import DataTitle from "../components/DataTitle.vue";
 import DataBoxes from "../components/DataBoxes.vue";
+import CountrySelect from "../components/CountrySelect.vue";
 
 @Options({
-	components: { DataTitle, DataBoxes },
+	components: { DataTitle, DataBoxes, CountrySelect },
 	data() {
 		return {
 			loading: true,
@@ -41,6 +55,18 @@ import DataBoxes from "../components/DataBoxes.vue";
 
 			const data = await res.json();
 			return data;
+		},
+		getCountryData(country: any) {
+			this.stats = country;
+			this.title = country.Country;
+			this.dataDate = country.Date;
+		},
+		async clearCountryData() {
+			this.loading = true;
+			const data = await this.fetchCovidData();
+			this.title = "Global";
+			this.stats = data.Global;
+			this.loading = false;
 		},
 	},
 	async created() {
